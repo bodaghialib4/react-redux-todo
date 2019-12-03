@@ -1,17 +1,40 @@
-import { SET_FILTER } from "../actionTypes";
-import { VISIBILITY_FILTERS } from "../../constants";
+import { ADD_TODO, TOGGLE_TODO } from "../actionTypes";
 
-const initialState = VISIBILITY_FILTERS.ALL;
-
-const visibilityFilter = (state = initialState, action) => {
-    switch (action.type) {
-        case SET_FILTER: {
-            return action.payload.filter;
-        }
-        default: {
-            return state;
-        }
-    }
+const initialState = {
+    allIds: [],
+    byIds: {}
 };
 
-export default visibilityFilter;
+export default function(state = initialState, action) {
+    switch (action.type) {
+        case ADD_TODO: {
+            const { id, content } = action.payload;
+            return {
+                ...state,
+                allIds: [...state.allIds, id],
+                byIds: {
+                    ...state.byIds,
+                    [id]: {
+                        content,
+                        completed: false
+                    }
+                }
+            };
+        }
+        case TOGGLE_TODO: {
+            const { id } = action.payload;
+            return {
+                ...state,
+                byIds: {
+                    ...state.byIds,
+                    [id]: {
+                        ...state.byIds[id],
+                        completed: !state.byIds[id].completed
+                    }
+                }
+            };
+        }
+        default:
+            return state;
+    }
+}
